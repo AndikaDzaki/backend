@@ -17,8 +17,8 @@ export const login = async (req, res) => {
 
       res.cookie("admin_token", token, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000,
       });
 
@@ -42,8 +42,8 @@ export const login = async (req, res) => {
 
     res.cookie("guru_token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -57,14 +57,14 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
   res.clearCookie("admin_token", {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
   });
 
   res.clearCookie("guru_token", {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
   });
 
   res.json({ success: true, message: "Logout berhasil" });
