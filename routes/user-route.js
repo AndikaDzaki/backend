@@ -14,6 +14,9 @@ router.get("/admin/me", verifyToken, (req, res) => {
 
 
 router.get("/guru/me", verifyToken, (req, res) => {
+  if (req.user.role !== "user") {
+    return res.status(403).json({ message: "Akses ditolak. Bukan guru." });
+  }
   return getMe(req, res);
 });
 
