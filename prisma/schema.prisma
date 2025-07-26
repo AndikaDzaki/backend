@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model absensi {
+  id         Int            @id @default(autoincrement())
+  id_siswa   Int
+  kelas_id   Int
+  tanggal    DateTime       @db.Date
+  status     absensi_status
+  created_at DateTime?      @default(now()) @db.Timestamp(0)
+  kelas      kelas          @relation(fields: [kelas_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_absensi_kelas")
+  siswa      siswa          @relation(fields: [id_siswa], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_absensi_siswa")
+
+  @@unique([id_siswa, tanggal], map: "unique_absensi")
+  @@index([kelas_id], map: "fk_absensi_kelas")
+}
+
+model notifikasi_admin {
+  id      Int      @id @default(autoincrement())
+  jenis   String?   @db.VarChar(50)
+  pesan   String   @db.Text
+  tanggal DateTime @default(now()) @db.Timestamp(0)
+  dibaca  Boolean  @default(false)
+}
+
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model guru {
+  id       Int      @id @default(autoincrement())
+  namaGuru String   @db.VarChar(255)
+  nik      String   @db.VarChar(20)
+  email    String   @unique(map: "email") @db.VarChar(255)
+  password String?  @db.VarChar(100)
+  jadwal   jadwal[]
+  kelas    kelas[]
+  notifikasi notifikasi_user[]
+}
+
+model notifikasi_user {
+  id        Int      @id @default(autoincrement())
+  guru      guru     @relation(fields: [id_guru], references: [id])
+  id_guru    Int
+  pesan     String
+  tanggal   DateTime @default(now())
+  dibaca    Boolean  @default(false)
+}
+
+
+model jadwal {
+  id          Int      @id @default(autoincrement())
+  id_guru     Int
+  id_kelas    Int
+  tanggal     DateTime @db.Date
+  jam_mulai   DateTime @db.Time(0)
+  jam_selesai DateTime @db.Time(0)
+  guru        guru     @relation(fields: [id_guru], references: [id], onDelete: Cascade, map: "fk_jadwal_id_guru")
+  kelas       kelas    @relation(fields: [id_kelas], references: [id], onDelete: Cascade, map: "fk_jadwal_id_kelas")
+
+  @@unique([id_guru, id_kelas, tanggal])
+  @@index([id_guru], map: "fk_jadwal_id_guru")
+  @@index([id_kelas], map: "fk_jadwal_id_kelas")
+}
+
+model kelas {
+  id         Int       @id @default(autoincrement())
+  nama_kelas String    @db.VarChar(100)
+  id_guru    Int
+  absensi    absensi[]
+  jadwal     jadwal[]
+  guru       guru      @relation(fields: [id_guru], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_id_guru")
+  siswa      siswa[]
+
+  @@index([id_guru], map: "fk_id_guru")
+}
+
+model qr_codes {
+  id         Int       @id @default(autoincrement())
+  id_siswa   Int       @unique(map: "id_siswa")
+  kode_qr    String    @db.Text
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  siswa      siswa     @relation(fields: [id_siswa], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "qr_codes_ibfk_1")
+}
+
+model semester {
+  id              Int             @id @default(autoincrement())
+  tahun_ajaran_id Int
+  semester        String          @db.VarChar(50)
+  status          semester_status
+  start_date      DateTime        @db.Date
+  end_date        DateTime        @db.Date
+  tahun_ajaran    tahun_ajaran    @relation(fields: [tahun_ajaran_id], references: [id], onDelete: Cascade, map: "fk_tahun_ajaran")
+
+  @@index([tahun_ajaran_id], map: "fk_tahun_ajaran")
+}
+
+model siswa {
+  id            Int           @id @default(autoincrement())
+  nama          String        @db.VarChar(100)
+  id_kelas      Int
+  nisn          String        @db.VarChar(20)
+  noTelp        String        @db.VarChar(15)
+  jenis_kelamin JenisKelamin?
+  absensi       absensi[]
+  qr_codes      qr_codes?
+  kelas         kelas         @relation(fields: [id_kelas], references: [id], onDelete: Cascade, map: "fk_id_siswa_kelas")
+
+  @@index([id_kelas], map: "fk_id_siswa_kelas")
+}
+
+model tahun_ajaran {
+  id           Int                 @id @default(autoincrement())
+  tahun_ajaran String              @db.VarChar(50)
+  status       tahun_ajaran_status
+  semester     semester[]
+}
+
+model PushSubscription {
+  id         Int      @id @default(autoincrement())
+  endpoint   String   @unique
+  keys       Json
+  createdAt  DateTime @default(now())
+}
+
+
+model users {
+  id       Int        @id @default(autoincrement())
+  name     String     @db.VarChar(100)
+  email    String     @unique(map: "email") @db.VarChar(100)
+  password String     @db.VarChar(255)
+  role     users_role
+}
+
+enum JenisKelamin {
+  L
+  P
+}
+
+enum tahun_ajaran_status {
+  Aktif
+  Tidak_Aktif @map("Tidak Aktif")
+}
+
+enum semester_status {
+  Aktif
+  Tidak_Aktif @map("Tidak Aktif")
+}
+
+enum absensi_status {
+  Hadir
+  Izin
+  Sakit
+  Alpa
+  Belum
+  Libur
+}
+
+enum users_role {
+  admin
+  user
+}
