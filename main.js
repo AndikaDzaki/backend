@@ -45,7 +45,7 @@
 
   app.use(
     cors({
-      origin: ["https://presensisdnuwungjaya.netlify.app",],
+      origin: ["https://e-presensisdnuwungjaya.com/,],
       credentials: true,
     })
   );
