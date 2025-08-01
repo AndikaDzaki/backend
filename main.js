@@ -32,7 +32,7 @@
 
   const io = new Server(server, {
     cors: {
-      origin: ["https://e-presensisdnuwungjaya.netlify.app", "https://e-presensisdnuwungjaya.com",],
+      origin: ["https://e-presensisdnuwungjaya.netlify.app", "https://e-presensisdnuwungjaya.com", "https://absensisdnuwungjaya.netlify.app",],
       credentials: true,
     },
   });
@@ -45,7 +45,7 @@
 
   app.use(
     cors({
-      origin: ["https://e-presensisdnuwungjaya.com", "https://e-presensisdnuwungjaya.netlify.app",],
+      origin: ["https://e-presensisdnuwungjaya.com", "https://e-presensisdnuwungjaya.netlify.app", "https://absensisdnuwungjaya.netlify.app",],
       credentials: true,
     })
   );
