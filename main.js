@@ -51,8 +51,15 @@
   );
 
 app.use((req, res, next) => {
-  res.setHeader("X-Frame-Options", "DENY"); 
- 
+  
+  res.setHeader("X-Frame-Options", "SAMEORIGIN"); 
+
+
+  res.setHeader(
+    "Content-Security-Policy",
+    "frame-ancestors 'self' https://e-presensisdnuwungjaya.com https://e-presensisdnuwungjaya.netlify.app"
+  );
+
   next();
 });
 
