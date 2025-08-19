@@ -50,6 +50,12 @@
     })
   );
 
+app.use((req, res, next) => {
+  res.setHeader("X-Frame-Options", "DENY"); 
+ 
+  next();
+});
+
   app.use("/api", authRoute);
   app.use("/api", userRoute);
   app.use("/api", siswaRoute);
